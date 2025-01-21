@@ -36,21 +36,6 @@ def create_user_db():
     conn.commit()
     conn.close()
 
-# Function to create a SQLite database and table for chat messages
-def create_chat_db():
-    conn = sqlite3.connect('chat.db')
-    cursor = conn.cursor()
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS messages (
-            id INTEGER PRIMARY KEY,
-            username TEXT NOT NULL,
-            message TEXT NOT NULL,
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-        )
-    ''')
-    conn.commit()
-    conn.close()
-
 # Function to register a new user with role
 def register_user(username, password, role='user'):
     conn = sqlite3.connect('user_accounts.db')
@@ -105,23 +90,6 @@ def delete_user_account(username):
     conn.commit()
     conn.close()
 
-# Function to send a message
-def send_message(username, message):
-    conn = sqlite3.connect('chat.db')
-    cursor = conn.cursor()
-    cursor.execute('INSERT INTO messages (username, message) VALUES (?, ?)', (username, message))
-    conn.commit()
-    conn.close()
-
-# Function to retrieve messages
-def get_messages():
-    conn = sqlite3.connect('chat.db')
-    cursor = conn.cursor()
-    cursor.execute('SELECT username, message, timestamp FROM messages ORDER BY timestamp')
-    messages = cursor.fetchall()
-    conn.close()
-    return messages
-
 def draw_wrapped_text(canvas, text, x, y, max_width):
     """Draws wrapped text on the canvas."""
     canvas.setFont("Helvetica", 12)
@@ -141,7 +109,7 @@ def draw_wrapped_text(canvas, text, x, y, max_width):
 # Function to create a PDF report
 def create_pdf(score, responses, username):
     buffer = io.BytesIO()
-    p = canvas.Canvas (buffer, pagesize=letter)
+    p = canvas.Canvas(buffer, pagesize=letter)
     width, height = letter
 
     # Set font for the title
@@ -219,7 +187,7 @@ def autism_info_page():
     st.markdown('<h2 class="big-header">Key Facts</h2>', unsafe_allow_html=True)
     st.markdown("""
         <ul class="big-text">
-            <li >Autism affects individuals differently and to varying degrees.</li>
+            <li>Autism affects individuals differently and to varying degrees.</li>
             <li>Early diagnosis and intervention can significantly improve outcomes.</li>
             <li>Support and resources are available for individuals with autism and their families.</li>
         </ul>
@@ -230,7 +198,7 @@ def autism_info_page():
     - [Persatuan Autisme Malaysia NASOM MELAKA](https://www.nasommelaka.com/)
     - [CDC Autism Spectrum Disorder](https://www.cdc.gov/ncbddd/autism/index.html)
     - [An accessible and efficient autism screening method for behavioural data and predictive analyses](https://journals.sagepub.com/doi/epdf/10.1177/1460458218796636?src=getftr&utm_source=sciencedirect_contenthosting&getft_integrator=sciencedirect_contenthosting)
-    - [Autism Behavioral Center](https://abcautism.com.my/)
+    - [Autism Behavioral Center](https ://abcautism.com.my/)
     """)
 
 # Function for the ASD Traits Prediction Page
@@ -265,7 +233,7 @@ def asd_prediction_page():
         "<h2 style='font-size: 19px; background-color: white; padding: 5px; border-radius: 5px; margin-top: 15px'>(0 = Many times a day/A few times a day , 1 = A few times a week/Less than once a week/Never):</h2>",
         
         "Does your child point to share interest with you? (e.g. pointing at an interesting sight) / Adakah anak anda menunjuk untuk berkongsi minat dengan anda? (contohnya menunjuk kepada pemandangan yang menarik) " +
-        "<h2 style='font-size: 19px; background-color: white; padding : 5px; border-radius: 5px; margin-top: 15px'>(0 = Many times a day/A few times a day , 1 = A few times a week/Less than once a week/Never):</h2>",
+        "<h2 style='font-size: 19px; background-color: white; padding: 5px; border-radius: 5px; margin-top: 15px'>(0 = Many times a day/A few times a day , 1 = A few times a week/Less than once a week/Never):</h2>",
         
         "Does your child pretend? (e.g. care for dolls, talk on a toy phone) / Adakah anak anda berpura-pura? (contohnya menjaga anak patung, bercakap menggunakan telefon mainan) " +
         "<h2 style='font-size: 19px; background-color: white; padding: 5px; border-radius: 5px; margin-top: 15px'>(0 = Many times a day/A few times a day , 1 = A few times a week/Less than once a week/Never):</h2>",
@@ -320,7 +288,7 @@ def asd_prediction_page():
     st.markdown("<h3 style='font-size: 28px;'>Family Member with ASD/ Ahli keluarga menghidap ASD</h3>", unsafe_allow_html=True)
     family_asd = st.selectbox("", options=["Yes", "No"], key="family_asd")
 
-    st.markdown("<h3 style='font-size: 28px;'>Who completed the test/ Siapa yang menjawab soalan ini</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style=' 28px;'>Who completed the test/ Siapa yang menjawab soalan ini</h3>", unsafe_allow_html=True)
     who_completed = st.selectbox(
         "", 
         options=["Family Member", "Self", "Health Care Professional", "School and NGO"]
@@ -398,7 +366,7 @@ def user_login():
     st.title("User  Login")
     username = st.text_input("Username")
     password = st.text_input("Password", type="password")
-    if st.button("Login "):
+    if st.button("Login"):
         if verify_user(username, password):
             st.session_state['logged_in'] = True
             st.session_state['username'] = username
@@ -432,7 +400,7 @@ def user_registration():
 def forgot_password():
     st.title("Forgot Password")
     username = st.text_input("Enter your username to reset password")
-    new_password = st.text_input("Enter new password", type="password")
+    new_password = st.text_input(" Enter new password", type="password")
     confirm_password = st.text_input("Confirm new password", type="password")
 
     if new_password == confirm_password:
@@ -442,39 +410,9 @@ def forgot_password():
     else:
         st.error("Passwords do not match.")
 
-# Chat Page
-def chat_page():
-    st.title("Live Chat with Doctor")
-
-    # Input for the message
-    message = st.text_input("Type your message:")
-    
-    if st.button("Send"):
-        if message:
-            send_message(st.session_state['username'], message)
-            st.success("Message sent!")
-        else:
-            st.error("Please enter a message.")
-
-    # Display chat messages
-    messages = get_messages()
-    for username, message, timestamp in messages:
-        st.write(f"{timestamp} - **{username}**: {message}")
-
-    # Doctor's reply section
-    if st.session_state.get('is_doctor', False):
-        doctor_reply = st.text_input("Type your reply:")
-        if st.button("Send Reply"):
-            if doctor_reply:
-                send_message("Doctor", doctor_reply)  # Assuming "Doctor" is the username for the doctor
-                st.success("Reply sent!")
-            else:
-                st.error("Please enter a reply.")
-
 # Main app page navigation
 def main():
     create_user_db()  # Create the user database and table if it doesn't exist
-    create_chat_db()  # Create the chat database and table if it doesn't exist
 
     # Inject custom CSS for background
     st.markdown(
@@ -497,7 +435,7 @@ def main():
         home_page()
 
         # Sidebar navigation for login or registration
-        st.sidebar.title("User  Authentication")
+        st.sidebar.title("User   Authentication")
         page = st.sidebar.selectbox("Select a page", ["Login", "Register", "Forgot Password"])
         
         if page == "Login":
@@ -508,8 +446,8 @@ def main():
             forgot_password()
     else:
         # If the user is logged in, show the dashboard options
-        st.sidebar.title("User  Dashboard")
-        page = st.sidebar.selectbox("Select a page", ["Autism Info", "ASD Prediction", "Profile", "Chat", "Logout"])
+        st.sidebar.title("User   Dashboard")
+        page = st.sidebar.selectbox("Select a page", ["Autism Info", "ASD Prediction", "Profile", "Logout"])
         
         if page == "ASD Prediction":
             asd_prediction_page()
@@ -517,12 +455,9 @@ def main():
             autism_info_page()
         elif page == "Profile":
             user_profile()
-        elif page == "Chat":
-            chat_page()
         elif page == "Logout":
             st.session_state['logged_in'] = False
             st.session_state['username'] = None
-            st.session_state['is_doctor'] = False  # Reset doctor role on logout
             st.success("You have logged out successfully.")
             st.rerun()  # Use rerun to refresh the app state
 
